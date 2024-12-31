@@ -13,17 +13,21 @@ import {
 import Delete from '../icons/Delete';
 import Edit from '../icons/Edit';
 import { useAppSelector } from '../hooks/store';
-import useUserActions from '../hooks/useUserActions';
+import useUserActions from '../hooks/useUserActions'
+import EditUserDialog from './EditUserDialog';
 
 export default function ListOfUsers() {
 	const users = useAppSelector((state) => state.users);
 	const { removeUser } = useUserActions();
 
+
 	return (
 		<Card className='w-full'>
-			<Title>
-				Usuarios:<Badge className='ml-4'>{users.length}</Badge>
-			</Title>
+			<div className='flex flex-row'>
+				<Title>Usuarios:</Title>
+				<Badge className='ml-2'>{users.length}</Badge>
+			</div>
+
 			<Table>
 				<TableHead>
 					<TableRow>
@@ -53,9 +57,11 @@ export default function ListOfUsers() {
 								<Button onClick={() => removeUser(item.id)} variant='light'>
 									<Delete />
 								</Button>
-								<Button variant='light'>
-									<Edit />
-								</Button>
+								<EditUserDialog user={item}>
+									<Button variant='light'>
+										<Edit />
+									</Button>
+								</EditUserDialog>
 							</TableCell>
 						</TableRow>
 					))}

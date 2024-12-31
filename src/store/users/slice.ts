@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { User, UserId, UserWithId } from '../../types';
 
 const DEFAULT_STATE = [
     {
@@ -27,23 +28,13 @@ const DEFAULT_STATE = [
     },
 ];
 
-export type UserId = string
 
-export interface User {
-    name: string
-    email: string
-    github: string
-}
 
-export interface UserWithId extends User {
-    id: UserId
-}
+const initialState: UserWithId[] = (() => {
+    const persistedState = localStorage.getItem("__redux__users__state__")
+    if (persistedState) return JSON.parse(persistedState).users
 
-const initialState: UserWithId[] = (()=>{
-	const persistedState = localStorage.getItem("__redux__users__state__")
-	if (persistedState) return JSON.parse(persistedState).users
-
-	return DEFAULT_STATE
+    return DEFAULT_STATE
 })()
 
 export const usersSlice = createSlice({
@@ -52,15 +43,21 @@ export const usersSlice = createSlice({
     reducers: {
         addNewUser: (state, action: PayloadAction<User>) => {
             const id = crypto.randomUUID()
-            state.push({id, ...action.payload })
+            state.push({ id, ...action.payload })
         },
-        deleteUserById: ( state, action: PayloadAction<UserId> ) => {
+        deleteUserById: (state, action: PayloadAction<UserId>) => {
             const id = action.payload
-            return state.filter( user => user.id !== id )
+            return state.filter(user => user.id !== id)
+        },
+        editUserAction: (state, action: PayloadAction<UserWithId>) => {
+            const index = state.findIndex((u) => u.id === action.payload.id);
+            if (index !== -1) {
+                state[index] = action.payload;
+            }
         },
         rollBackUser: (state, action: PayloadAction<UserWithId>) => {
             const id = action.payload.id
-            const isUserInState = state.some(user=> user.id === id)
+            const isUserInState = state.some(user => user.id === id)
             if (!isUserInState) {
                 state.push(action.payload)
             }
@@ -70,4 +67,4 @@ export const usersSlice = createSlice({
 
 export default usersSlice.reducer
 
-export const { deleteUserById, addNewUser, rollBackUser } = usersSlice.actions
+export const { deleteUserById, addNewUser, rollBackUser, editUserAction } = usersSlice.actions

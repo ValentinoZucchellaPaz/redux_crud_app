@@ -1,9 +1,15 @@
 import { Button, Card, TextInput, Title, Text, Badge } from '@tremor/react';
 import { FormEvent, useState } from 'react';
 import useUserActions from '../hooks/useUserActions';
+import { EditUser } from '../types';
+import { toast } from 'sonner';
 
-export default function CreateNewUser() {
-	const { addUser } = useUserActions();
+interface CreateNewUserProps {
+	edit: EditUser | null
+}
+
+export default function CreateNewUser({ edit }: CreateNewUserProps) {
+	const { addUser, editUser } = useUserActions();
 	const [error, setError] = useState<boolean | string>(false);
 	const [lastAdded, setLastAdded] = useState<string>('');
 	const [status, setStatus] = useState<'ok' | null>(null);
@@ -66,27 +72,36 @@ export default function CreateNewUser() {
 			return setError(errorValidation);
 		}
 
-		addUser({ name, email, github });
+		if (edit !== null) {
+			const id = edit.id
+			editUser({ id, name, email, github })
+			edit.setEdit(prev => !prev)
+		} else {
+			addUser({ name, email, github })
+		}
+
+		toast.success(`Usuario ${name} ${edit !== null ? 'editado' : 'creado'} correctamente`)
+
 		setStatus('ok');
 		setLastAdded(name);
 		form.reset();
 	}
 
 	return (
-		<Card className='mt-5 lg:w-1/2 p-10'>
-			<Title>Create New User</Title>
+		<Card className='mt-5 p-10'>
+			<Title>{edit ? 'Editar usuario' : 'Crear nuevo usuario'}</Title>
 			{error && (
 				<Text color='red' className='font-medium'>
 					{error}
 				</Text>
 			)}
 			<form className='my-2 flex flex-col gap-3' onSubmit={handleSubmit}>
-				<TextInput name='name' placeholder='Aquí el nombre' />
-				<TextInput name='email' placeholder='Aquí el email' />
-				<TextInput name='github' placeholder='Aquí el usuario de Github' />
+				<TextInput name='name' placeholder='Aquí el nombre' defaultValue={edit?.name} />
+				<TextInput name='email' placeholder='Aquí el email' defaultValue={edit?.email} />
+				<TextInput name='github' placeholder='Aquí el usuario de Github' defaultValue={edit?.github} />
 
 				<div>
-					<Button type='submit'>Crear</Button>
+					<Button type='submit'>{edit ? 'Editar' : 'Crear'}</Button>
 					{status === 'ok' && (
 						<Badge className='ml-3' color='green'>
 							{lastAdded} guardado correctamente

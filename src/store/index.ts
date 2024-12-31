@@ -1,6 +1,7 @@
 import { Middleware, configureStore } from "@reduxjs/toolkit"
-import usersReducer, { UserWithId, rollBackUser } from "./users/slice"
+import usersReducer, { rollBackUser } from "./users/slice"
 import { toast } from 'sonner'
+import { UserWithId } from "../types"
 
 const persistanceLSMiddleware: Middleware = (store) => (next) => (action) => {
     next(action)
@@ -8,20 +9,20 @@ const persistanceLSMiddleware: Middleware = (store) => (next) => (action) => {
 }
 
 const syncWithDatabaseMiddleware: Middleware = (store) => (next) => (action) => {
-    const {type, payload} = action
+    const { type, payload } = action
     const previousState = store.getState()
     next(action)
-    if (type === 'users/deleteUserById'){
+    if (type === 'users/deleteUserById') {
         const userToRemove = previousState.users.find((user: UserWithId) => user.id === payload)
         const userIdToRemove = payload
-        
-        fetch(`https://jsonplaceholder.typicode.com/users/${userIdToRemove}`, {method: 'DELETE'})
-            .then(res =>{
+
+        fetch(`https://jsonplaceholder.typicode.com/users/${userIdToRemove}`, { method: 'DELETE' })
+            .then(res => {
                 if (res.ok) {
                     return toast.success(`Usuario con id ${userIdToRemove} eliminado correctamente`)
                 }
                 throw new Error('Error al eliminar el usuario')
-            }).catch(err=>{
+            }).catch(err => {
                 if (userToRemove) store.dispatch(rollBackUser(userToRemove))
                 toast.error(`Error al eliminar el usuario con id ${userIdToRemove}`)
                 console.log(err);
@@ -35,7 +36,3 @@ export const store = configureStore({
     },
     middleware: [persistanceLSMiddleware, syncWithDatabaseMiddleware]
 })
-
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch

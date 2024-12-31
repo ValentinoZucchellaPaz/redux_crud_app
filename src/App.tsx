@@ -4,11 +4,13 @@ import CreateNewUser from './components/CreateNewUser';
 import ListOfUsers from './components/ListOfUsers';
 
 function App() {
+
 	return (
-		<div className='w-[80%] m-auto my-10 flex flex-col justify-center items-center'>
-			<p>primera app redux</p>
+		<div className='w-[80%] m-auto my-10 flex flex-col justify-center items-center relative'>
 			<ListOfUsers />
-			<CreateNewUser />
+			<div className='lg:w-[40dvw]'>
+				<CreateNewUser edit={null} />
+			</div>
 			<Toaster expand={true} richColors />
 		</div>
 	);
