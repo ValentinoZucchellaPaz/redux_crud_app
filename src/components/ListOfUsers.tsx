@@ -20,7 +20,6 @@ export default function ListOfUsers() {
 	const users = useAppSelector((state) => state.users);
 	const { removeUser } = useUserActions();
 
-
 	return (
 		<Card className='w-full'>
 			<div className='flex flex-row'>

@@ -1,6 +1,5 @@
 function Edit() {
 	return (
-		// rome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
 		<svg
 			xmlns='http://www.w3.org/2000/svg'
 			fill='none'

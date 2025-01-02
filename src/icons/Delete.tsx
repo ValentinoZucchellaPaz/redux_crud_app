@@ -1,6 +1,5 @@
 export default function Delete() {
 	return (
-		// rome-ignore lint/a11y/noSvgWithoutTitle: <explanation>
 		<svg
 			aria-label='remove button'
 			xmlns='http://www.w3.org/2000/svg'

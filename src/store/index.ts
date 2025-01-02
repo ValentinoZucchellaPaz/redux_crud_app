@@ -3,6 +3,7 @@ import usersReducer, { rollBackUser } from "./users/slice"
 import { toast } from 'sonner'
 import { UserWithId } from "../types"
 
+// middlewares
 const persistanceLSMiddleware: Middleware = (store) => (next) => (action) => {
     next(action)
     localStorage.setItem("__redux__users__state__", JSON.stringify(store.getState()))
@@ -16,6 +17,7 @@ const syncWithDatabaseMiddleware: Middleware = (store) => (next) => (action) => 
         const userToRemove = previousState.users.find((user: UserWithId) => user.id === payload)
         const userIdToRemove = payload
 
+        //"""database update"""
         fetch(`https://jsonplaceholder.typicode.com/users/${userIdToRemove}`, { method: 'DELETE' })
             .then(res => {
                 if (res.ok) {

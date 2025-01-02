@@ -14,7 +14,6 @@ export default function useUserActions() {
 	}
 
 	function editUser({ id, name, email, github }: UserWithId) {
-		// logica para cambiar los nombres
 		dispatch(editUserAction({ id, name, email, github }))
 	}
 
